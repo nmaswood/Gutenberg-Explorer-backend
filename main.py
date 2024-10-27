@@ -15,10 +15,8 @@ import os
 from dotenv import load_dotenv
 
 
-# Load environment variables from .env file
 load_dotenv()
 
-# Fetch the API key from environment variables
 together_api_key = os.getenv("TOGETHER_API_KEY")
 
 app = FastAPI()
@@ -113,9 +111,7 @@ def delete_book(book: BookRequest,  db: Session = Depends(get_db)):
 
 @app.get("/analyze-book/{book_id}")
 async def analyze_book_content(book_id: str, db: Session = Depends(get_db)):
-    """
-    Endpoint to analyze a book's content using Together AI LLM.
-    """
+
     try:
         # Get book from database
         book = db.query(Book).filter(Book.id == book_id).first()

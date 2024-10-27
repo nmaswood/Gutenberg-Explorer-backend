@@ -6,11 +6,11 @@ from typing import Dict
 from langchain_together import ChatTogether
 
 class BookChunker:
-    def __init__(self, max_chunk_tokens: int = 3000):  # Reduced from 7000 to 3000
+    def __init__(self, max_chunk_tokens: int = 3000):
         self.max_chunk_tokens = max_chunk_tokens
         
     def estimate_tokens(self, text: str) -> int:
-        # More conservative estimation: 1 token ≈ 3 characters
+        
         return len(text) // 3
         
     def split_into_chunks(self, text: str) -> List[str]:
@@ -74,7 +74,7 @@ class BookAnalyzer:
         summarized_analyses = []
         for i, analysis in enumerate(analyses, 1):
             # Limit each analysis summary to reduce tokens
-            summary = f"Section {i}: {analysis[:1000]}..."  # Limit each summary
+            summary = f"Section {i}: {analysis[:1000]}..."
             summarized_analyses.append(summary)
             
         combined_analyses = "\n---\n".join(summarized_analyses[-3:])  # Only keep last 3 sections
@@ -84,7 +84,7 @@ class BookAnalyzer:
         prompt = self.create_analysis_prompt(content)
         # Add token count debugging
         estimated_tokens = self.chunker.estimate_tokens(prompt)
-        if estimated_tokens > 4000:  # Safe limit for input
+        if estimated_tokens > 4000: 
             raise Exception(f"Prompt too long: estimated {estimated_tokens} tokens")
             
         response = ""
@@ -114,7 +114,7 @@ class BookAnalyzer:
             if len(chunk_analyses) == 1:
                 return chunk_analyses[0]
             
-            # Create final summary with limited scope
+            # Create final summary
             final_prompt = self.create_summary_prompt(chunk_analyses)
             final_analysis = ""
             for message_chunk in self.chat.stream(final_prompt):
