@@ -23,7 +23,7 @@ together_api_key = os.getenv("TOGETHER_API_KEY")
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://localhost:3000" , "https://gutenberg-explorer-front-0919fa90af02.herokuapp.com"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
