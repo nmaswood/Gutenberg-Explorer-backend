@@ -31,7 +31,7 @@ app.add_middleware(
 
 
 chat = ChatTogether(
-    together_api_key=together_api_key,
+    together_api_key=str(together_api_key),
     model="meta-llama/Llama-3-70b-chat-hf",
 )
 analyzer = BookAnalyzer(chat)
