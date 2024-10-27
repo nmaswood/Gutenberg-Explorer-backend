@@ -1,0 +1,27 @@
+# Python compiled files
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+env/
+
+# Environment variables
+.env
+
+# Logs
+*.log
+
+# Miscellaneous
+*.db
+*.sqlite3
+*.pkl
+*.pyc
+*.egg-info/
+dist/
+build/
+*.egg
+
+# IDE settings
+.vscode/
+.idea/
+*.swp
