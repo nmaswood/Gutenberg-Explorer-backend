@@ -18,7 +18,7 @@ load_dotenv()
 # Database URL should ideally be stored in environment variables for security.
 # DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_URL = os.getenv("DATABASE_URL").replace("postgres://" , "postgresql://")
 
 # Create a global engine that will be used across the app
 engine = create_engine(DATABASE_URL)
