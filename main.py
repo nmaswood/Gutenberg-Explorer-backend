@@ -1,7 +1,8 @@
-from fastapi import FastAPI, Depends, HTTPException  , status
+from fastapi import FastAPI, Depends, HTTPException  , status , BackgroundTasks
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 import requests
-from typing import List
+from typing import List , Generator
 from schemas import BookSchema
 from models import Book
 from db_handler import get_db, engine, Base
@@ -108,26 +109,23 @@ def delete_book(book: BookRequest,  db: Session = Depends(get_db)):
 
 
 
-
 @app.get("/analyze-book/{book_id}")
-async def analyze_book_content(book_id: str, db: Session = Depends(get_db)):
-
+def analyze_book_content(book_id: str, db: Session = Depends(get_db)):
     try:
         # Get book from database
         book = db.query(Book).filter(Book.id == book_id).first()
         if not book:
-            raise HTTPException(
-                status_code=404,
-                detail=f"Book with id {book_id} not found"
-            )
+            raise HTTPException(status_code=404, detail=f"Book with id {book_id} not found")
 
-        # Analyze book content
-        analysis = await analyzer.analyze_content(book.content)
-        # Return the JSON response with 'analysis' as the key
-        return {"analysis": analysis}
+        # Create a generator for streaming analysis results
+        def analyze_book_stream() -> Generator[str, None, None]:
+            for analysis_chunk in analyzer.analyze_content(book.content):  # Call synchronous analyze_content
+                yield analysis_chunk
+
+
+        # Return the streaming response immediately
+        return StreamingResponse(analyze_book_stream(), media_type="text/plain")
 
     except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Analysis failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
+

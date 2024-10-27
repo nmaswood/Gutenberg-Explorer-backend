@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional , Generator
 from pydantic import BaseModel
 import json
 import os
@@ -80,7 +80,7 @@ class BookAnalyzer:
         combined_analyses = "\n---\n".join(summarized_analyses[-3:])  # Only keep last 3 sections
         return self.summary_prompt_template.format(previous_analyses=combined_analyses)
 
-    async def get_llm_analysis(self, content: str) -> str:
+    def get_llm_analysis(self, content: str) -> str:
         prompt = self.create_analysis_prompt(content)
         # Add token count debugging
         estimated_tokens = self.chunker.estimate_tokens(prompt)
@@ -92,7 +92,7 @@ class BookAnalyzer:
             response += message_chunk.content
         return response
         
-    async def analyze_content(self, content: str) -> str:
+    def analyze_content(self, content: str):
         try:
             print(f"Total content length: {len(content)} characters")
             chunks = self.chunker.split_into_chunks(content)
@@ -102,25 +102,20 @@ class BookAnalyzer:
             for i, chunk in enumerate(chunks, 1):
                 print(f"Analyzing chunk {i}/{len(chunks)} - {len(chunk)} characters")
                 try:
-                    analysis = await self.get_llm_analysis(chunk)
+                    analysis = self.get_llm_analysis(chunk)
                     chunk_analyses.append(analysis)
+                    yield analysis  # Yield each analysis result immediately
                 except Exception as chunk_error:
                     print(f"Warning: Chunk {i} analysis failed: {str(chunk_error)}")
                     continue
             
-            if not chunk_analyses:
-                raise Exception("No chunks were successfully analyzed")
-                
-            if len(chunk_analyses) == 1:
-                return chunk_analyses[0]
-            
-            # Create final summary
-            final_prompt = self.create_summary_prompt(chunk_analyses)
-            final_analysis = ""
-            for message_chunk in self.chat.stream(final_prompt):
-                final_analysis += message_chunk.content
-                
-            return final_analysis
+            # Optionally yield a summary if needed at the end
+            if chunk_analyses:
+                final_prompt = self.create_summary_prompt(chunk_analyses)
+                final_analysis = ""
+                for message_chunk in self.chat.stream(final_prompt):
+                    final_analysis += message_chunk.content
+                yield final_analysis  # Yield the final summary
                 
         except Exception as e:
             raise Exception(f"Analysis failed: {str(e)}")

@@ -15,7 +15,7 @@ load_dotenv()
 
 
 
-# Database URL should ideally be stored in environment variables for security.
+# # Database URL should ideally be stored in environment variables for security.
 # DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 DATABASE_URL = os.getenv("DATABASE_URL").replace("postgres://" , "postgresql://")
