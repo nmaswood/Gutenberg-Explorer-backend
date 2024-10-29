@@ -6,15 +6,6 @@ from urllib.parse import urljoin
 
 
 def parse_gutenberg_rdf_metadata(xml_content: str) -> Dict[str, Any]:
-    """
-    Parse Project Gutenberg RDF/XML metadata and return a dictionary.
-
-    Args:
-        xml_content (str): RDF/XML content from a Project Gutenberg metadata file
-        
-    Returns:
-        Dict[str, Any]: Dictionary containing parsed book metadata
-    """
     try:
         # Parse the XML with BeautifulSoup
         soup = BeautifulSoup(xml_content, 'lxml-xml')
